@@ -475,6 +475,72 @@ function export_lambda_function_recommendations(
 end
 
 """
+    export_license_recommendations(s3_destination_config)
+    export_license_recommendations(s3_destination_config, params::Dict{String,<:Any})
+
+ Export optimization recommendations for your licenses.  Recommendations are exported in a
+comma-separated values (CSV) file, and its metadata in a JavaScript Object Notation (JSON)
+file, to an existing Amazon Simple Storage Service (Amazon S3) bucket that you specify. For
+more information, see Exporting Recommendations in the Compute Optimizer User Guide. You
+can have only one license export job in progress per Amazon Web Services Region.
+
+# Arguments
+- `s3_destination_config`:
+
+# Optional Parameters
+Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"accountIds"`: The IDs of the Amazon Web Services accounts for which to export license
+  recommendations. If your account is the management account of an organization, use this
+  parameter to specify the member account for which you want to export recommendations. This
+  parameter can't be specified together with the include member accounts parameter. The
+  parameters are mutually exclusive. If this parameter is omitted, recommendations for member
+  accounts aren't included in the export. You can specify multiple account IDs per request.
+- `"fieldsToExport"`: The recommendations data to include in the export file. For more
+  information about the fields that can be exported, see Exported files in the Compute
+  Optimizer User Guide.
+- `"fileFormat"`: The format of the export file. A CSV file is the only export format
+  currently supported.
+- `"filters"`:  An array of objects to specify a filter that exports a more specific set of
+  license recommendations.
+- `"includeMemberAccounts"`: Indicates whether to include recommendations for resources in
+  all member accounts of the organization if your account is the management account of an
+  organization. The member accounts must also be opted in to Compute Optimizer, and trusted
+  access for Compute Optimizer must be enabled in the organization account. For more
+  information, see Compute Optimizer and Amazon Web Services Organizations trusted access in
+  the Compute Optimizer User Guide. If this parameter is omitted, recommendations for member
+  accounts of the organization aren't included in the export file . This parameter cannot be
+  specified together with the account IDs parameter. The parameters are mutually exclusive.
+"""
+function export_license_recommendations(
+    s3DestinationConfig; aws_config::AbstractAWSConfig=global_aws_config()
+)
+    return compute_optimizer(
+        "ExportLicenseRecommendations",
+        Dict{String,Any}("s3DestinationConfig" => s3DestinationConfig);
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+function export_license_recommendations(
+    s3DestinationConfig,
+    params::AbstractDict{String};
+    aws_config::AbstractAWSConfig=global_aws_config(),
+)
+    return compute_optimizer(
+        "ExportLicenseRecommendations",
+        Dict{String,Any}(
+            mergewith(
+                _merge,
+                Dict{String,Any}("s3DestinationConfig" => s3DestinationConfig),
+                params,
+            ),
+        );
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+
+"""
     get_auto_scaling_group_recommendations()
     get_auto_scaling_group_recommendations(params::Dict{String,<:Any})
 
@@ -945,6 +1011,46 @@ function get_lambda_function_recommendations(
 end
 
 """
+    get_license_recommendations()
+    get_license_recommendations(params::Dict{String,<:Any})
+
+Returns license recommendations for Amazon EC2 instances that run on a specific license.
+Compute Optimizer generates recommendations for licenses that meet a specific set of
+requirements. For more information, see the Supported resources and requirements in the
+Compute Optimizer User Guide.
+
+# Optional Parameters
+Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"accountIds"`: The ID of the Amazon Web Services account for which to return license
+  recommendations. If your account is the management account of an organization, use this
+  parameter to specify the member account for which you want to return license
+  recommendations. Only one account ID can be specified per request.
+- `"filters"`:  An array of objects to specify a filter that returns a more specific list
+  of license recommendations.
+- `"maxResults"`:  The maximum number of license recommendations to return with a single
+  request.   To retrieve the remaining results, make another request with the returned
+  nextToken value.
+- `"nextToken"`:  The token to advance to the next page of license recommendations.
+- `"resourceArns"`:  The ARN that identifies the Amazon EC2 instance.   The following is
+  the format of the ARN:   arn:aws:ec2:region:aws_account_id:instance/instance-id
+"""
+function get_license_recommendations(; aws_config::AbstractAWSConfig=global_aws_config())
+    return compute_optimizer(
+        "GetLicenseRecommendations"; aws_config=aws_config, feature_set=SERVICE_FEATURE_SET
+    )
+end
+function get_license_recommendations(
+    params::AbstractDict{String}; aws_config::AbstractAWSConfig=global_aws_config()
+)
+    return compute_optimizer(
+        "GetLicenseRecommendations",
+        params;
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+
+"""
     get_recommendation_preferences(resource_type)
     get_recommendation_preferences(resource_type, params::Dict{String,<:Any})
 
@@ -1067,6 +1173,21 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   To deactivate it, create a recommendation preference.  Specify the Inactive status to
   deactivate the feature, or specify Active to activate it. For more information, see
   Inferred workload types in the Compute Optimizer User Guide.
+- `"lookBackPeriod"`:  The preference to control the number of days the utilization metrics
+  of the Amazon Web Services resource are analyzed. When this preference isn't specified, we
+  use the default value DAYS_14.   You can only set this preference for the Amazon EC2
+  instance and Auto Scaling group resource types.
+- `"preferredResources"`:  The preference to control which resource type values are
+  considered when generating rightsizing recommendations. You can specify this preference as
+  a combination of include and exclude lists. You must specify either an includeList or
+  excludeList. If the preference is an empty set of resource type values, an error occurs.
+  You can only set this preference for the Amazon EC2 instance and Auto Scaling group
+  resource types.
+- `"savingsEstimationMode"`:  The status of the savings estimation mode preference to
+  create or update.  Specify the AfterDiscounts status to activate the preference, or specify
+  BeforeDiscounts to deactivate the preference. Only the account manager or delegated
+  administrator of your organization can activate this preference. For more information, see
+  Savings estimation mode in the Compute Optimizer User Guide.
 - `"scope"`: An object that describes the scope of the recommendation preference to create.
   You can create recommendation preferences at the organization level (for management
   accounts of an organization only), account level, and resource level. For more information,
@@ -1079,6 +1200,12 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   recommendation preferences at the resource level for instances that are part of an Auto
   Scaling group. You can create recommendation preferences at the resource level only for
   standalone instances.
+- `"utilizationPreferences"`:  The preference to control the resource’s CPU utilization
+  threshold, CPU utilization headroom, and memory utilization headroom. When this preference
+  isn't specified, we use the following default values.  CPU utilization:    P99_5 for
+  threshold    PERCENT_20 for headroom   Memory utilization:    PERCENT_20 for headroom
+  You can only set CPU and memory utilization preferences for the Amazon EC2 instance
+  resource type.   The threshold setting isn’t available for memory utilization.
 """
 function put_recommendation_preferences(
     resourceType; aws_config::AbstractAWSConfig=global_aws_config()

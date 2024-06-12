@@ -392,8 +392,7 @@ notifications to the target.   Create the lifecycle hook. Specify whether the ho
 when the instances launch or terminate.   If you need more time, record the lifecycle
 action heartbeat to keep the instance in a wait state.    If you finish before the timeout
 period ends, send a callback by using the CompleteLifecycleAction API call.    For more
-information, see Amazon EC2 Auto Scaling lifecycle hooks in the Amazon EC2 Auto Scaling
-User Guide.
+information, see Complete a lifecycle action in the Amazon EC2 Auto Scaling User Guide.
 
 # Arguments
 - `auto_scaling_group_name`: The name of the Auto Scaling group.
@@ -459,14 +458,12 @@ functionality for Amazon EC2 Auto Scaling and Amazon EC2.  Creates an Auto Scali
 with the specified name and attributes.  If you exceed your maximum limit of Auto Scaling
 groups, the call fails. To query this limit, call the DescribeAccountLimits API. For
 information about updating this limit, see Quotas for Amazon EC2 Auto Scaling in the Amazon
-EC2 Auto Scaling User Guide. For introductory exercises for creating an Auto Scaling group,
-see Getting started with Amazon EC2 Auto Scaling and Tutorial: Set up a scaled and
-load-balanced application in the Amazon EC2 Auto Scaling User Guide. For more information,
-see Auto Scaling groups in the Amazon EC2 Auto Scaling User Guide. Every Auto Scaling group
-has three size properties (DesiredCapacity, MaxSize, and MinSize). Usually, you set these
-sizes based on a specific number of instances. However, if you configure a mixed instances
-policy that defines weights for the instance types, you must specify these sizes with the
-same units that you use for weighting instances.
+EC2 Auto Scaling User Guide. If you're new to Amazon EC2 Auto Scaling, see the introductory
+tutorials in Get started with Amazon EC2 Auto Scaling in the Amazon EC2 Auto Scaling User
+Guide. Every Auto Scaling group has three size properties (DesiredCapacity, MaxSize, and
+MinSize). Usually, you set these sizes based on a specific number of instances. However, if
+you configure a mixed instances policy that defines weights for the instance types, you
+must specify these sizes with the same units that you use for weighting instances.
 
 # Arguments
 - `auto_scaling_group_name`: The name of the Auto Scaling group. This name must be unique
@@ -538,6 +535,8 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   instance to create a new launch configuration. To get the instance ID, use the Amazon EC2
   DescribeInstances API operation. For more information, see Creating an Auto Scaling group
   using an EC2 instance in the Amazon EC2 Auto Scaling User Guide.
+- `"InstanceMaintenancePolicy"`: An instance maintenance policy. For more information, see
+  Set instance maintenance policy in the Amazon EC2 Auto Scaling User Guide.
 - `"LaunchConfigurationName"`: The name of the launch configuration to use to launch
   instances.  Conditional: You must specify either a launch template (LaunchTemplate or
   MixedInstancesPolicy) or a launch configuration (LaunchConfigurationName or InstanceId).
@@ -1313,15 +1312,15 @@ end
     describe_instance_refreshes(auto_scaling_group_name)
     describe_instance_refreshes(auto_scaling_group_name, params::Dict{String,<:Any})
 
-Gets information about the instance refreshes for the specified Auto Scaling group. This
-operation is part of the instance refresh feature in Amazon EC2 Auto Scaling, which helps
-you update instances in your Auto Scaling group after you make configuration changes. To
-help you determine the status of an instance refresh, Amazon EC2 Auto Scaling returns
-information about the instance refreshes you previously initiated, including their status,
-start time, end time, the percentage of the instance refresh that is complete, and the
-number of instances remaining to update before the instance refresh is complete. If a
-rollback is initiated while an instance refresh is in progress, Amazon EC2 Auto Scaling
-also returns information about the rollback of the instance refresh.
+Gets information about the instance refreshes for the specified Auto Scaling group from the
+previous six weeks. This operation is part of the instance refresh feature in Amazon EC2
+Auto Scaling, which helps you update instances in your Auto Scaling group after you make
+configuration changes. To help you determine the status of an instance refresh, Amazon EC2
+Auto Scaling returns information about the instance refreshes you previously initiated,
+including their status, start time, end time, the percentage of the instance refresh that
+is complete, and the number of instances remaining to update before the instance refresh is
+complete. If a rollback is initiated while an instance refresh is in progress, Amazon EC2
+Auto Scaling also returns information about the rollback of the instance refresh.
 
 # Arguments
 - `auto_scaling_group_name`: The name of the Auto Scaling group.
@@ -2144,9 +2143,9 @@ end
     detach_traffic_sources(auto_scaling_group_name, traffic_sources, params::Dict{String,<:Any})
 
 Detaches one or more traffic sources from the specified Auto Scaling group. When you detach
-a taffic, it enters the Removing state while deregistering the instances in the group. When
-all instances are deregistered, then you can no longer describe the traffic source using
-the DescribeTrafficSources API call. The instances continue to run.
+a traffic source, it enters the Removing state while deregistering the instances in the
+group. When all instances are deregistered, then you can no longer describe the traffic
+source using the DescribeTrafficSources API call. The instances continue to run.
 
 # Arguments
 - `auto_scaling_group_name`: The name of the Auto Scaling group.
@@ -2745,8 +2744,8 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   the policy type is PredictiveScaling.
 - `"ScalingAdjustment"`: The amount by which to scale, based on the specified adjustment
   type. A positive value adds to the current capacity while a negative number removes from
-  the current capacity. For exact capacity, you must specify a positive value. Required if
-  the policy type is SimpleScaling. (Not used with any other policy type.)
+  the current capacity. For exact capacity, you must specify a non-negative value. Required
+  if the policy type is SimpleScaling. (Not used with any other policy type.)
 - `"StepAdjustments"`: A set of adjustments that enable you to scale based on the size of
   the alarm breach. Required if the policy type is StepScaling. (Not used with any other
   policy type.)
@@ -3060,8 +3059,8 @@ function resume_processes(
 end
 
 """
-    rollback_instance_refresh()
-    rollback_instance_refresh(params::Dict{String,<:Any})
+    rollback_instance_refresh(auto_scaling_group_name)
+    rollback_instance_refresh(auto_scaling_group_name, params::Dict{String,<:Any})
 
 Cancels an instance refresh that is in progress and rolls back any changes that it made.
 Amazon EC2 Auto Scaling replaces any instances that were replaced during the instance
@@ -3076,21 +3075,34 @@ launch template's Latest or Default version.   When you receive a successful res
 this operation, Amazon EC2 Auto Scaling immediately begins replacing instances. You can
 check the status of this operation through the DescribeInstanceRefreshes API operation.
 
-# Optional Parameters
-Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
-- `"AutoScalingGroupName"`: The name of the Auto Scaling group.
+# Arguments
+- `auto_scaling_group_name`: The name of the Auto Scaling group.
+
 """
-function rollback_instance_refresh(; aws_config::AbstractAWSConfig=global_aws_config())
-    return auto_scaling(
-        "RollbackInstanceRefresh"; aws_config=aws_config, feature_set=SERVICE_FEATURE_SET
-    )
-end
 function rollback_instance_refresh(
-    params::AbstractDict{String}; aws_config::AbstractAWSConfig=global_aws_config()
+    AutoScalingGroupName; aws_config::AbstractAWSConfig=global_aws_config()
 )
     return auto_scaling(
         "RollbackInstanceRefresh",
-        params;
+        Dict{String,Any}("AutoScalingGroupName" => AutoScalingGroupName);
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+function rollback_instance_refresh(
+    AutoScalingGroupName,
+    params::AbstractDict{String};
+    aws_config::AbstractAWSConfig=global_aws_config(),
+)
+    return auto_scaling(
+        "RollbackInstanceRefresh",
+        Dict{String,Any}(
+            mergewith(
+                _merge,
+                Dict{String,Any}("AutoScalingGroupName" => AutoScalingGroupName),
+                params,
+            ),
+        );
         aws_config=aws_config,
         feature_set=SERVICE_FEATURE_SET,
     )
@@ -3269,27 +3281,24 @@ end
     start_instance_refresh(auto_scaling_group_name)
     start_instance_refresh(auto_scaling_group_name, params::Dict{String,<:Any})
 
-Starts an instance refresh. During an instance refresh, Amazon EC2 Auto Scaling performs a
-rolling update of instances in an Auto Scaling group. Instances are terminated first and
-then replaced, which temporarily reduces the capacity available within your Auto Scaling
-group. This operation is part of the instance refresh feature in Amazon EC2 Auto Scaling,
-which helps you update instances in your Auto Scaling group. This feature is helpful, for
-example, when you have a new AMI or a new user data script. You just need to create a new
-launch template that specifies the new AMI or user data script. Then start an instance
-refresh to immediately begin the process of updating instances in the group.  If
-successful, the request's response contains a unique ID that you can use to track the
-progress of the instance refresh. To query its status, call the DescribeInstanceRefreshes
-API. To describe the instance refreshes that have already run, call the
-DescribeInstanceRefreshes API. To cancel an instance refresh that is in progress, use the
-CancelInstanceRefresh API.  An instance refresh might fail for several reasons, such as EC2
-launch failures, misconfigured health checks, or not ignoring or allowing the termination
-of instances that are in Standby state or protected from scale in. You can monitor for
-failed EC2 launches using the scaling activities. To find the scaling activities, call the
-DescribeScalingActivities API. If you enable auto rollback, your Auto Scaling group will be
-rolled back automatically when the instance refresh fails. You can enable this feature
-before starting an instance refresh by specifying the AutoRollback property in the instance
-refresh preferences. Otherwise, to roll back an instance refresh before it finishes, use
-the RollbackInstanceRefresh API.
+Starts an instance refresh. This operation is part of the instance refresh feature in
+Amazon EC2 Auto Scaling, which helps you update instances in your Auto Scaling group. This
+feature is helpful, for example, when you have a new AMI or a new user data script. You
+just need to create a new launch template that specifies the new AMI or user data script.
+Then start an instance refresh to immediately begin the process of updating instances in
+the group.  If successful, the request's response contains a unique ID that you can use to
+track the progress of the instance refresh. To query its status, call the
+DescribeInstanceRefreshes API. To describe the instance refreshes that have already run,
+call the DescribeInstanceRefreshes API. To cancel an instance refresh that is in progress,
+use the CancelInstanceRefresh API.  An instance refresh might fail for several reasons,
+such as EC2 launch failures, misconfigured health checks, or not ignoring or allowing the
+termination of instances that are in Standby state or protected from scale in. You can
+monitor for failed EC2 launches using the scaling activities. To find the scaling
+activities, call the DescribeScalingActivities API. If you enable auto rollback, your Auto
+Scaling group will be rolled back automatically when the instance refresh fails. You can
+enable this feature before starting an instance refresh by specifying the AutoRollback
+property in the instance refresh preferences. Otherwise, to roll back an instance refresh
+before it finishes, use the RollbackInstanceRefresh API.
 
 # Arguments
 - `auto_scaling_group_name`: The name of the Auto Scaling group.
@@ -3306,11 +3315,11 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   template and instance types. This can help you reduce the number of replacements that are
   required to apply updates.
 - `"Preferences"`: Sets your preferences for the instance refresh so that it performs as
-  expected when you start it. Includes the instance warmup time, the minimum healthy
-  percentage, and the behaviors that you want Amazon EC2 Auto Scaling to use if instances
-  that are in Standby state or protected from scale in are found. You can also choose to
-  enable additional features, such as the following:   Auto rollback   Checkpoints   Skip
-  matching
+  expected when you start it. Includes the instance warmup time, the minimum and maximum
+  healthy percentages, and the behaviors that you want Amazon EC2 Auto Scaling to use if
+  instances that are in Standby state or protected from scale in are found. You can also
+  choose to enable additional features, such as the following:   Auto rollback   Checkpoints
+   CloudWatch alarms   Skip matching
 - `"Strategy"`: The strategy to use for the instance refresh. The only valid value is
   Rolling.
 """
@@ -3532,6 +3541,8 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   be disabled. For more information, see Health checks for Auto Scaling instances in the
   Amazon EC2 Auto Scaling User Guide. Only specify EC2 if you must clear a value that was
   previously set.
+- `"InstanceMaintenancePolicy"`: An instance maintenance policy. For more information, see
+  Set instance maintenance policy in the Amazon EC2 Auto Scaling User Guide.
 - `"LaunchConfigurationName"`: The name of the launch configuration. If you specify
   LaunchConfigurationName in your update request, you can't specify LaunchTemplate or
   MixedInstancesPolicy.

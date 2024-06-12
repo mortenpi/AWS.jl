@@ -511,7 +511,7 @@ end
     get_job(id)
     get_job(id, params::Dict{String,<:Any})
 
-Retrieve the JSON for a specific completed transcoding job.
+Retrieve the JSON for a specific transcoding job.
 
 # Arguments
 - `id`: the job ID of the job.

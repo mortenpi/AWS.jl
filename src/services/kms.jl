@@ -15,7 +15,8 @@ Service Developer Guide. The KMS key that you use for this operation must be in 
 compatible key state. For details, see Key states of KMS keys in the Key Management Service
 Developer Guide.  Cross-account use: No. You cannot perform this operation on a KMS key in
 a different Amazon Web Services account.  Required permissions: kms:CancelKeyDeletion (key
-policy)  Related operations: ScheduleKeyDeletion
+policy)  Related operations: ScheduleKeyDeletion   Eventual consistency: The KMS API
+follows an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the KMS key whose deletion is being canceled. Specify the key ID or
@@ -90,7 +91,8 @@ Management Service Developer Guide.  Cross-account use: No. You cannot perform t
 operation on a custom key store in a different Amazon Web Services account.  Required
 permissions: kms:ConnectCustomKeyStore (IAM policy)  Related operations
 CreateCustomKeyStore     DeleteCustomKeyStore     DescribeCustomKeyStores
-DisconnectCustomKeyStore     UpdateCustomKeyStore
+DisconnectCustomKeyStore     UpdateCustomKeyStore     Eventual consistency: The KMS API
+follows an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `custom_key_store_id`: Enter the key store ID of the custom key store that you want to
@@ -147,7 +149,8 @@ Cross-account use: No. You cannot perform this operation on an alias in a differ
 Web Services account.  Required permissions     kms:CreateAlias on the alias (IAM policy).
   kms:CreateAlias on the KMS key (key policy).   For details, see Controlling access to
 aliases in the Key Management Service Developer Guide.  Related operations:     DeleteAlias
-    ListAliases     UpdateAlias
+    ListAliases     UpdateAlias     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `alias_name`: Specifies the alias name. This value must begin with alias/ followed by a
@@ -239,7 +242,9 @@ failures, see Troubleshooting a custom key store in the Key Management Service D
 Guide.  Cross-account use: No. You cannot perform this operation on a custom key store in a
 different Amazon Web Services account.  Required permissions: kms:CreateCustomKeyStore (IAM
 policy).  Related operations:     ConnectCustomKeyStore     DeleteCustomKeyStore
-DescribeCustomKeyStores     DisconnectCustomKeyStore     UpdateCustomKeyStore
+DescribeCustomKeyStores     DisconnectCustomKeyStore     UpdateCustomKeyStore     Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Arguments
 - `custom_key_store_name`: Specifies a friendly name for the custom key store. The name
@@ -311,8 +316,8 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
     The combined XksProxyUriEndpoint and XksProxyUriPath values must be unique in the Amazon
   Web Services account and Region.   An external key store with PUBLIC_ENDPOINT connectivity
   cannot use the same XksProxyUriEndpoint value as an external key store with
-  VPC_ENDPOINT_SERVICE connectivity in the same Amazon Web Services Region.   Each external
-  key store with VPC_ENDPOINT_SERVICE connectivity must have its own private DNS name. The
+  VPC_ENDPOINT_SERVICE connectivity in this Amazon Web Services Region.   Each external key
+  store with VPC_ENDPOINT_SERVICE connectivity must have its own private DNS name. The
   XksProxyUriEndpoint value for external key stores with VPC_ENDPOINT_SERVICE connectivity
   (private DNS name) must be unique in the Amazon Web Services account and Region.
 - `"XksProxyUriPath"`: Specifies the base path to the proxy APIs for this external key
@@ -386,6 +391,8 @@ Key Management Service Developer Guide.  Cross-account use: Yes. To perform this
 on a KMS key in a different Amazon Web Services account, specify the key ARN in the value
 of the KeyId parameter.   Required permissions: kms:CreateGrant (key policy)  Related
 operations:     ListGrants     ListRetirableGrants     RetireGrant     RevokeGrant
+Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `grantee_principal`: The identity that gets the permissions specified in the grant. To
@@ -426,6 +433,9 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   constraint cannot exceed 384 characters. For information about grant constraints, see Using
   grant constraints in the Key Management Service Developer Guide. For more information about
   encryption context, see Encryption context in the  Key Management Service Developer Guide .
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"GrantTokens"`: A list of grant tokens.  Use a grant token when your permission to call
   this operation comes from a new grant that has not yet achieved eventual consistency. For
   more information, see Grant token and Using a grant token in the Key Management Service
@@ -588,7 +598,8 @@ in a different Amazon Web Services account.  Required permissions: kms:CreateKey
 policy). To use the Tags parameter, kms:TagResource (IAM policy). For examples and
 information about related permissions, see Allow a user to create KMS keys in the Key
 Management Service Developer Guide.  Related operations:     DescribeKey     ListKeys
-ScheduleKeyDeletion
+ScheduleKeyDeletion     Eventual consistency: The KMS API follows an eventual consistency
+model. For more information, see KMS eventual consistency.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
@@ -760,20 +771,25 @@ compute environment in Amazon EC2. To call Decrypt for a Nitro enclave, use the 
 Services Nitro Enclaves SDK or any Amazon Web Services SDK. Use the Recipient parameter to
 provide the attestation document for the enclave. Instead of the plaintext data, the
 response includes the plaintext data encrypted with the public key from the attestation
-document (CiphertextForRecipient).For information about the interaction between KMS and
+document (CiphertextForRecipient). For information about the interaction between KMS and
 Amazon Web Services Nitro Enclaves, see How Amazon Web Services Nitro Enclaves uses KMS in
-the Key Management Service Developer Guide.. The KMS key that you use for this operation
+the Key Management Service Developer Guide. The KMS key that you use for this operation
 must be in a compatible key state. For details, see Key states of KMS keys in the Key
 Management Service Developer Guide.  Cross-account use: Yes. If you use the KeyId parameter
 to identify a KMS key in a different Amazon Web Services account, specify the key ARN or
 the alias ARN of the KMS key.  Required permissions: kms:Decrypt (key policy)  Related
 operations:     Encrypt     GenerateDataKey     GenerateDataKeyPair     ReEncrypt
+Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `ciphertext_blob`: Ciphertext to be decrypted. The blob includes metadata.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"EncryptionAlgorithm"`: Specifies the encryption algorithm that will be used to decrypt
   the ciphertext. Specify the same algorithm that was used to encrypt the data. If you
   specify a different algorithm, the Decrypt operation fails. This parameter is required only
@@ -860,7 +876,8 @@ use: No. You cannot perform this operation on an alias in a different Amazon Web
 account.  Required permissions     kms:DeleteAlias on the alias (IAM policy).
 kms:DeleteAlias on the KMS key (key policy).   For details, see Controlling access to
 aliases in the Key Management Service Developer Guide.  Related operations:     CreateAlias
-    ListAliases     UpdateAlias
+    ListAliases     UpdateAlias     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `alias_name`: The alias to be deleted. The alias name must begin with alias/ followed by
@@ -919,7 +936,8 @@ returns a JSON object with no properties.  Cross-account use: No. You cannot per
 operation on a custom key store in a different Amazon Web Services account.  Required
 permissions: kms:DeleteCustomKeyStore (IAM policy)  Related operations:
 ConnectCustomKeyStore     CreateCustomKeyStore     DescribeCustomKeyStores
-DisconnectCustomKeyStore     UpdateCustomKeyStore
+DisconnectCustomKeyStore     UpdateCustomKeyStore     Eventual consistency: The KMS API
+follows an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `custom_key_store_id`: Enter the ID of the custom key store you want to delete. To find
@@ -967,7 +985,8 @@ operation must be in a compatible key state. For details, see Key states of KMS 
 Key Management Service Developer Guide.  Cross-account use: No. You cannot perform this
 operation on a KMS key in a different Amazon Web Services account.  Required permissions:
 kms:DeleteImportedKeyMaterial (key policy)  Related operations:     GetParametersForImport
-   ImportKeyMaterial
+   ImportKeyMaterial     Eventual consistency: The KMS API follows an eventual consistency
+model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the KMS key from which you are deleting imported key material. The
@@ -1026,7 +1045,8 @@ Management Service Developer Guide.  Cross-account use: No. You cannot perform t
 operation on a custom key store in a different Amazon Web Services account.  Required
 permissions: kms:DescribeCustomKeyStores (IAM policy)  Related operations:
 ConnectCustomKeyStore     CreateCustomKeyStore     DeleteCustomKeyStore
-DisconnectCustomKeyStore     UpdateCustomKeyStore
+DisconnectCustomKeyStore     UpdateCustomKeyStore     Eventual consistency: The KMS API
+follows an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
@@ -1089,7 +1109,8 @@ Services alias with no key ID.  Cross-account use: Yes. To perform this operatio
 KMS key in a different Amazon Web Services account, specify the key ARN or alias ARN in the
 value of the KeyId parameter.  Required permissions: kms:DescribeKey (key policy)  Related
 operations:     GetKeyPolicy     GetKeyRotationStatus     ListAliases     ListGrants
-ListKeys     ListResourceTags     ListRetirableGrants
+ListKeys     ListResourceTags     ListRetirableGrants     Eventual consistency: The KMS API
+follows an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Describes the specified KMS key.  If you specify a predefined Amazon Web
@@ -1141,6 +1162,8 @@ The KMS key that you use for this operation must be in a compatible key state. F
 see Key states of KMS keys in the Key Management Service Developer Guide.  Cross-account
 use: No. You cannot perform this operation on a KMS key in a different Amazon Web Services
 account.  Required permissions: kms:DisableKey (key policy)  Related operations: EnableKey
+ Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the KMS key to disable. Specify the key ID or key ARN of the KMS
@@ -1187,6 +1210,8 @@ state. For details, see Key states of KMS keys in the Key Management Service Dev
 Guide.  Cross-account use: No. You cannot perform this operation on a KMS key in a
 different Amazon Web Services account.  Required permissions: kms:DisableKeyRotation (key
 policy)  Related operations:     EnableKeyRotation     GetKeyRotationStatus
+ListKeyRotations     RotateKeyOnDemand     Eventual consistency: The KMS API follows an
+eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies a symmetric encryption KMS key. You cannot enable or disable
@@ -1238,7 +1263,8 @@ no properties.  Cross-account use: No. You cannot perform this operation on a cu
 store in a different Amazon Web Services account.  Required permissions:
 kms:DisconnectCustomKeyStore (IAM policy)  Related operations:     ConnectCustomKeyStore
  CreateCustomKeyStore     DeleteCustomKeyStore     DescribeCustomKeyStores
-UpdateCustomKeyStore
+UpdateCustomKeyStore     Eventual consistency: The KMS API follows an eventual consistency
+model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `custom_key_store_id`: Enter the ID of the custom key store you want to disconnect. To
@@ -1281,7 +1307,8 @@ cryptographic operations.  The KMS key that you use for this operation must be i
 compatible key state. For details, see Key states of KMS keys in the Key Management Service
 Developer Guide.  Cross-account use: No. You cannot perform this operation on a KMS key in
 a different Amazon Web Services account.  Required permissions: kms:EnableKey (key policy)
-Related operations: DisableKey
+Related operations: DisableKey   Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the KMS key to enable. Specify the key ID or key ARN of the KMS key.
@@ -1314,27 +1341,37 @@ end
     enable_key_rotation(key_id, params::Dict{String,<:Any})
 
 Enables automatic rotation of the key material of the specified symmetric encryption KMS
-key.  When you enable automatic rotation of acustomer managed KMS key, KMS rotates the key
-material of the KMS key one year (approximately 365 days) from the enable date and every
-year thereafter. You can monitor rotation of the key material for your KMS keys in
-CloudTrail and Amazon CloudWatch. To disable rotation of the key material in a customer
-managed KMS key, use the DisableKeyRotation operation. Automatic key rotation is supported
-only on symmetric encryption KMS keys. You cannot enable automatic rotation of asymmetric
-KMS keys, HMAC KMS keys, KMS keys with imported key material, or KMS keys in a custom key
-store. To enable or disable automatic rotation of a set of related multi-Region keys, set
-the property on the primary key.  You cannot enable or disable automatic rotation Amazon
-Web Services managed KMS keys. KMS always rotates the key material of Amazon Web Services
-managed keys every year. Rotation of Amazon Web Services owned KMS keys varies.  In May
-2022, KMS changed the rotation schedule for Amazon Web Services managed keys from every
-three years (approximately 1,095 days) to every year (approximately 365 days). New Amazon
-Web Services managed keys are automatically rotated one year after they are created, and
-approximately every year thereafter.  Existing Amazon Web Services managed keys are
-automatically rotated one year after their most recent rotation, and every year thereafter.
- The KMS key that you use for this operation must be in a compatible key state. For
-details, see Key states of KMS keys in the Key Management Service Developer Guide.
-Cross-account use: No. You cannot perform this operation on a KMS key in a different Amazon
-Web Services account.  Required permissions: kms:EnableKeyRotation (key policy)  Related
-operations:     DisableKeyRotation     GetKeyRotationStatus
+key.  By default, when you enable automatic rotation of a customer managed KMS key, KMS
+rotates the key material of the KMS key one year (approximately 365 days) from the enable
+date and every year thereafter. You can use the optional RotationPeriodInDays parameter to
+specify a custom rotation period when you enable key rotation, or you can use
+RotationPeriodInDays to modify the rotation period of a key that you previously enabled
+automatic key rotation on. You can monitor rotation of the key material for your KMS keys
+in CloudTrail and Amazon CloudWatch. To disable rotation of the key material in a customer
+managed KMS key, use the DisableKeyRotation operation. You can use the GetKeyRotationStatus
+operation to identify any in progress rotations. You can use the ListKeyRotations operation
+to view the details of completed rotations. Automatic key rotation is supported only on
+symmetric encryption KMS keys. You cannot enable automatic rotation of asymmetric KMS keys,
+HMAC KMS keys, KMS keys with imported key material, or KMS keys in a custom key store. To
+enable or disable automatic rotation of a set of related multi-Region keys, set the
+property on the primary key.  You cannot enable or disable automatic rotation of Amazon Web
+Services managed KMS keys. KMS always rotates the key material of Amazon Web Services
+managed keys every year. Rotation of Amazon Web Services owned KMS keys is managed by the
+Amazon Web Services service that owns the key.  In May 2022, KMS changed the rotation
+schedule for Amazon Web Services managed keys from every three years (approximately 1,095
+days) to every year (approximately 365 days). New Amazon Web Services managed keys are
+automatically rotated one year after they are created, and approximately every year
+thereafter.  Existing Amazon Web Services managed keys are automatically rotated one year
+after their most recent rotation, and every year thereafter.  The KMS key that you use for
+this operation must be in a compatible key state. For details, see Key states of KMS keys
+in the Key Management Service Developer Guide.  Cross-account use: No. You cannot perform
+this operation on a KMS key in a different Amazon Web Services account.  Required
+permissions: kms:EnableKeyRotation (key policy)  Related operations:     DisableKeyRotation
+    GetKeyRotationStatus     ListKeyRotations     RotateKeyOnDemand   You can perform
+on-demand (RotateKeyOnDemand) rotation of the key material in customer managed KMS keys,
+regardless of whether or not automatic key rotation is enabled.     Eventual consistency:
+The KMS API follows an eventual consistency model. For more information, see KMS eventual
+consistency.
 
 # Arguments
 - `key_id`: Identifies a symmetric encryption KMS key. You cannot enable automatic rotation
@@ -1345,6 +1382,14 @@ operations:     DisableKeyRotation     GetKeyRotationStatus
   arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab    To get the
   key ID and key ARN for a KMS key, use ListKeys or DescribeKey.
 
+# Optional Parameters
+Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"RotationPeriodInDays"`: Use this parameter to specify a custom period of time between
+  each rotation date. If no value is specified, the default value is 365 days. The rotation
+  period defines the number of days after you enable automatic key rotation that KMS will
+  rotate your key material, and the number of days between each automatic rotation
+  thereafter. You can use the  kms:RotationPeriodInDays  condition key to further constrain
+  the values that principals can specify in the RotationPeriodInDays parameter.
 """
 function enable_key_rotation(KeyId; aws_config::AbstractAWSConfig=global_aws_config())
     return kms(
@@ -1400,7 +1445,8 @@ states of KMS keys in the Key Management Service Developer Guide.  Cross-account
 To perform this operation with a KMS key in a different Amazon Web Services account,
 specify the key ARN or alias ARN in the value of the KeyId parameter.  Required
 permissions: kms:Encrypt (key policy)  Related operations:     Decrypt     GenerateDataKey
-   GenerateDataKeyPair
+   GenerateDataKeyPair     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the KMS key to use in the encryption operation. The KMS key must
@@ -1417,6 +1463,9 @@ permissions: kms:Encrypt (key policy)  Related operations:     Decrypt     Gener
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"EncryptionAlgorithm"`: Specifies the encryption algorithm that KMS will use to encrypt
   the plaintext message. The algorithm must be compatible with the KMS key that you specify.
   This parameter is required only for asymmetric KMS keys. The default value,
@@ -1516,7 +1565,9 @@ plaintext data key from memory.    Cross-account use: Yes. To perform this opera
 KMS key in a different Amazon Web Services account, specify the key ARN or alias ARN in the
 value of the KeyId parameter.  Required permissions: kms:GenerateDataKey (key policy)
 Related operations:     Decrypt     Encrypt     GenerateDataKeyPair
-GenerateDataKeyPairWithoutPlaintext     GenerateDataKeyWithoutPlaintext
+GenerateDataKeyPairWithoutPlaintext     GenerateDataKeyWithoutPlaintext     Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Arguments
 - `key_id`: Specifies the symmetric encryption KMS key that encrypts the data key. You
@@ -1533,6 +1584,9 @@ GenerateDataKeyPairWithoutPlaintext     GenerateDataKeyWithoutPlaintext
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"EncryptionContext"`: Specifies the encryption context that will be used when encrypting
   the data key.  Do not include confidential or sensitive information in this field. This
   field may be displayed in plaintext in CloudTrail logs and other output.  An encryption
@@ -1595,20 +1649,20 @@ Returns a unique asymmetric data key pair for use outside of KMS. This operation
 plaintext public key, a plaintext private key, and a copy of the private key that is
 encrypted under the symmetric encryption KMS key you specify. You can use the data key pair
 to perform asymmetric cryptography and implement digital signatures outside of KMS. The
-bytes in the keys are random; they not related to the caller or to the KMS key that is used
-to encrypt the private key.  You can use the public key that GenerateDataKeyPair returns to
-encrypt data or verify a signature outside of KMS. Then, store the encrypted private key
-with the data. When you are ready to decrypt data or sign a message, you can use the
-Decrypt operation to decrypt the encrypted private key. To generate a data key pair, you
-must specify a symmetric encryption KMS key to encrypt the private key in a data key pair.
-You cannot use an asymmetric KMS key or a KMS key in a custom key store. To get the type
-and origin of your KMS key, use the DescribeKey operation.  Use the KeyPairSpec parameter
-to choose an RSA or Elliptic Curve (ECC) data key pair. In China Regions, you can also
-choose an SM2 data key pair. KMS recommends that you use ECC key pairs for signing, and use
-RSA and SM2 key pairs for either encryption or signing, but not both. However, KMS cannot
-enforce any restrictions on the use of data key pairs outside of KMS. If you are using the
-data key pair to encrypt data, or for any operation where you don't immediately need a
-private key, consider using the GenerateDataKeyPairWithoutPlaintext operation.
+bytes in the keys are random; they are not related to the caller or to the KMS key that is
+used to encrypt the private key.  You can use the public key that GenerateDataKeyPair
+returns to encrypt data or verify a signature outside of KMS. Then, store the encrypted
+private key with the data. When you are ready to decrypt data or sign a message, you can
+use the Decrypt operation to decrypt the encrypted private key. To generate a data key
+pair, you must specify a symmetric encryption KMS key to encrypt the private key in a data
+key pair. You cannot use an asymmetric KMS key or a KMS key in a custom key store. To get
+the type and origin of your KMS key, use the DescribeKey operation.  Use the KeyPairSpec
+parameter to choose an RSA or Elliptic Curve (ECC) data key pair. In China Regions, you can
+also choose an SM2 data key pair. KMS recommends that you use ECC key pairs for signing,
+and use RSA and SM2 key pairs for either encryption or signing, but not both. However, KMS
+cannot enforce any restrictions on the use of data key pairs outside of KMS. If you are
+using the data key pair to encrypt data, or for any operation where you don't immediately
+need a private key, consider using the GenerateDataKeyPairWithoutPlaintext operation.
 GenerateDataKeyPairWithoutPlaintext returns a plaintext public key and an encrypted private
 key, but omits the plaintext private key that you need only to decrypt ciphertext or sign a
 message. Later, when you need to decrypt the data or sign a message, use the Decrypt
@@ -1638,7 +1692,8 @@ To perform this operation with a KMS key in a different Amazon Web Services acco
 specify the key ARN or alias ARN in the value of the KeyId parameter.  Required
 permissions: kms:GenerateDataKeyPair (key policy)  Related operations:     Decrypt
 Encrypt     GenerateDataKey     GenerateDataKeyPairWithoutPlaintext
-GenerateDataKeyWithoutPlaintext
+GenerateDataKeyWithoutPlaintext     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Specifies the symmetric encryption KMS key that encrypts the private key in the
@@ -1660,6 +1715,9 @@ GenerateDataKeyWithoutPlaintext
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"EncryptionContext"`: Specifies the encryption context that will be used when encrypting
   the private key in the data key pair.  Do not include confidential or sensitive information
   in this field. This field may be displayed in plaintext in CloudTrail logs and other
@@ -1752,7 +1810,9 @@ Service Developer Guide.  Cross-account use: Yes. To perform this operation with
 in a different Amazon Web Services account, specify the key ARN or alias ARN in the value
 of the KeyId parameter.  Required permissions: kms:GenerateDataKeyPairWithoutPlaintext (key
 policy)  Related operations:     Decrypt     Encrypt     GenerateDataKey
-GenerateDataKeyPair     GenerateDataKeyWithoutPlaintext
+GenerateDataKeyPair     GenerateDataKeyWithoutPlaintext     Eventual consistency: The KMS
+API follows an eventual consistency model. For more information, see KMS eventual
+consistency.
 
 # Arguments
 - `key_id`: Specifies the symmetric encryption KMS key that encrypts the private key in the
@@ -1774,6 +1834,9 @@ GenerateDataKeyPair     GenerateDataKeyWithoutPlaintext
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"EncryptionContext"`: Specifies the encryption context that will be used when encrypting
   the private key in the data key pair.  Do not include confidential or sensitive information
   in this field. This field may be displayed in plaintext in CloudTrail logs and other
@@ -1857,7 +1920,8 @@ Yes. To perform this operation with a KMS key in a different Amazon Web Services
 specify the key ARN or alias ARN in the value of the KeyId parameter.  Required
 permissions: kms:GenerateDataKeyWithoutPlaintext (key policy)  Related operations:
 Decrypt     Encrypt     GenerateDataKey     GenerateDataKeyPair
-GenerateDataKeyPairWithoutPlaintext
+GenerateDataKeyPairWithoutPlaintext     Eventual consistency: The KMS API follows an
+eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Specifies the symmetric encryption KMS key that encrypts the data key. You
@@ -1874,6 +1938,9 @@ GenerateDataKeyPairWithoutPlaintext
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"EncryptionContext"`: Specifies the encryption context that will be used when encrypting
   the data key.  Do not include confidential or sensitive information in this field. This
   field may be displayed in plaintext in CloudTrail logs and other output.  An encryption
@@ -1936,7 +2003,9 @@ you use for this operation must be in a compatible key state. For details, see K
 of KMS keys in the Key Management Service Developer Guide.  Cross-account use: Yes. To
 perform this operation with a KMS key in a different Amazon Web Services account, specify
 the key ARN or alias ARN in the value of the KeyId parameter.   Required permissions:
-kms:GenerateMac (key policy)  Related operations: VerifyMac
+kms:GenerateMac (key policy)  Related operations: VerifyMac   Eventual consistency: The KMS
+API follows an eventual consistency model. For more information, see KMS eventual
+consistency.
 
 # Arguments
 - `key_id`: The HMAC KMS key to use in the operation. The MAC algorithm computes the HMAC
@@ -1953,6 +2022,9 @@ kms:GenerateMac (key policy)  Related operations: VerifyMac
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"GrantTokens"`: A list of grant tokens. Use a grant token when your permission to call
   this operation comes from a new grant that has not yet achieved eventual consistency. For
   more information, see Grant token and Using a grant token in the Key Management Service
@@ -2012,7 +2084,8 @@ How Amazon Web Services Nitro Enclaves uses KMS in the Key Management Service De
 Guide. For more information about entropy and random number generation, see Key Management
 Service Cryptographic Details.  Cross-account use: Not applicable. GenerateRandom does not
 use any account-specific resources, such as KMS keys.  Required permissions:
-kms:GenerateRandom (IAM policy)
+kms:GenerateRandom (IAM policy)  Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
@@ -2047,47 +2120,41 @@ function generate_random(
 end
 
 """
-    get_key_policy(key_id, policy_name)
-    get_key_policy(key_id, policy_name, params::Dict{String,<:Any})
+    get_key_policy(key_id)
+    get_key_policy(key_id, params::Dict{String,<:Any})
 
 Gets a key policy attached to the specified KMS key.  Cross-account use: No. You cannot
 perform this operation on a KMS key in a different Amazon Web Services account.  Required
-permissions: kms:GetKeyPolicy (key policy)  Related operations: PutKeyPolicy
+permissions: kms:GetKeyPolicy (key policy)  Related operations: PutKeyPolicy   Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Arguments
 - `key_id`: Gets the key policy for the specified KMS key. Specify the key ID or key ARN of
   the KMS key. For example:   Key ID: 1234abcd-12ab-34cd-56ef-1234567890ab    Key ARN:
   arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab    To get the
   key ID and key ARN for a KMS key, use ListKeys or DescribeKey.
-- `policy_name`: Specifies the name of the key policy. The only valid name is default. To
-  get the names of key policies, use ListKeyPolicies.
 
+# Optional Parameters
+Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"PolicyName"`: Specifies the name of the key policy. If no policy name is specified, the
+  default value is default. The only valid name is default. To get the names of key policies,
+  use ListKeyPolicies.
 """
-function get_key_policy(
-    KeyId, PolicyName; aws_config::AbstractAWSConfig=global_aws_config()
-)
+function get_key_policy(KeyId; aws_config::AbstractAWSConfig=global_aws_config())
     return kms(
         "GetKeyPolicy",
-        Dict{String,Any}("KeyId" => KeyId, "PolicyName" => PolicyName);
+        Dict{String,Any}("KeyId" => KeyId);
         aws_config=aws_config,
         feature_set=SERVICE_FEATURE_SET,
     )
 end
 function get_key_policy(
-    KeyId,
-    PolicyName,
-    params::AbstractDict{String};
-    aws_config::AbstractAWSConfig=global_aws_config(),
+    KeyId, params::AbstractDict{String}; aws_config::AbstractAWSConfig=global_aws_config()
 )
     return kms(
         "GetKeyPolicy",
-        Dict{String,Any}(
-            mergewith(
-                _merge,
-                Dict{String,Any}("KeyId" => KeyId, "PolicyName" => PolicyName),
-                params,
-            ),
-        );
+        Dict{String,Any}(mergewith(_merge, Dict{String,Any}("KeyId" => KeyId), params));
         aws_config=aws_config,
         feature_set=SERVICE_FEATURE_SET,
     )
@@ -2097,34 +2164,38 @@ end
     get_key_rotation_status(key_id)
     get_key_rotation_status(key_id, params::Dict{String,<:Any})
 
-Gets a Boolean value that indicates whether automatic rotation of the key material is
-enabled for the specified KMS key. When you enable automatic rotation for customer managed
-KMS keys, KMS rotates the key material of the KMS key one year (approximately 365 days)
-from the enable date and every year thereafter. You can monitor rotation of the key
-material for your KMS keys in CloudTrail and Amazon CloudWatch. Automatic key rotation is
-supported only on symmetric encryption KMS keys. You cannot enable automatic rotation of
-asymmetric KMS keys, HMAC KMS keys, KMS keys with imported key material, or KMS keys in a
-custom key store. To enable or disable automatic rotation of a set of related multi-Region
-keys, set the property on the primary key.. You can enable (EnableKeyRotation) and disable
-automatic rotation (DisableKeyRotation) of the key material in customer managed KMS keys.
-Key material rotation of Amazon Web Services managed KMS keys is not configurable. KMS
-always rotates the key material in Amazon Web Services managed KMS keys every year. The key
-rotation status for Amazon Web Services managed KMS keys is always true.  In May 2022, KMS
-changed the rotation schedule for Amazon Web Services managed keys from every three years
-to every year. For details, see EnableKeyRotation.  The KMS key that you use for this
-operation must be in a compatible key state. For details, see Key states of KMS keys in the
-Key Management Service Developer Guide.   Disabled: The key rotation status does not change
-when you disable a KMS key. However, while the KMS key is disabled, KMS does not rotate the
-key material. When you re-enable the KMS key, rotation resumes. If the key material in the
-re-enabled KMS key hasn't been rotated in one year, KMS rotates it immediately, and every
-year thereafter. If it's been less than a year since the key material in the re-enabled KMS
-key was rotated, the KMS key resumes its prior rotation schedule.   Pending deletion: While
-a KMS key is pending deletion, its key rotation status is false and KMS does not rotate the
-key material. If you cancel the deletion, the original key rotation status returns to true.
-   Cross-account use: Yes. To perform this operation on a KMS key in a different Amazon Web
-Services account, specify the key ARN in the value of the KeyId parameter.  Required
-permissions: kms:GetKeyRotationStatus (key policy)  Related operations:
-DisableKeyRotation     EnableKeyRotation
+Provides detailed information about the rotation status for a KMS key, including whether
+automatic rotation of the key material is enabled for the specified KMS key, the rotation
+period, and the next scheduled rotation date. Automatic key rotation is supported only on
+symmetric encryption KMS keys. You cannot enable automatic rotation of asymmetric KMS keys,
+HMAC KMS keys, KMS keys with imported key material, or KMS keys in a custom key store. To
+enable or disable automatic rotation of a set of related multi-Region keys, set the
+property on the primary key.. You can enable (EnableKeyRotation) and disable automatic
+rotation (DisableKeyRotation) of the key material in customer managed KMS keys. Key
+material rotation of Amazon Web Services managed KMS keys is not configurable. KMS always
+rotates the key material in Amazon Web Services managed KMS keys every year. The key
+rotation status for Amazon Web Services managed KMS keys is always true. You can perform
+on-demand (RotateKeyOnDemand) rotation of the key material in customer managed KMS keys,
+regardless of whether or not automatic key rotation is enabled. You can use
+GetKeyRotationStatus to identify the date and time that an in progress on-demand rotation
+was initiated. You can use ListKeyRotations to view the details of completed rotations.  In
+May 2022, KMS changed the rotation schedule for Amazon Web Services managed keys from every
+three years to every year. For details, see EnableKeyRotation.  The KMS key that you use
+for this operation must be in a compatible key state. For details, see Key states of KMS
+keys in the Key Management Service Developer Guide.   Disabled: The key rotation status
+does not change when you disable a KMS key. However, while the KMS key is disabled, KMS
+does not rotate the key material. When you re-enable the KMS key, rotation resumes. If the
+key material in the re-enabled KMS key hasn't been rotated in one year, KMS rotates it
+immediately, and every year thereafter. If it's been less than a year since the key
+material in the re-enabled KMS key was rotated, the KMS key resumes its prior rotation
+schedule.   Pending deletion: While a KMS key is pending deletion, its key rotation status
+is false and KMS does not rotate the key material. If you cancel the deletion, the original
+key rotation status returns to true.    Cross-account use: Yes. To perform this operation
+on a KMS key in a different Amazon Web Services account, specify the key ARN in the value
+of the KeyId parameter.  Required permissions: kms:GetKeyRotationStatus (key policy)
+Related operations:     DisableKeyRotation     EnableKeyRotation     ListKeyRotations
+RotateKeyOnDemand     Eventual consistency: The KMS API follows an eventual consistency
+model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Gets the rotation status for the specified KMS key. Specify the key ID or key
@@ -2170,8 +2241,8 @@ type. However, you can't import key material into a KMS key in a custom key stor
 also use GetParametersForImport to get a public key and import token to reimport the
 original key material into a KMS key whose key material expired or was deleted.
 GetParametersForImport returns the items that you need to import your key material.   The
-public key (or \"wrapping key\") of an RSA key pair that KMS generates. You will use this
-public key to encrypt (\"wrap\") your key material while it's in transit to KMS.    A
+public key (or \"wrapping key\") of an asymmetric key pair that KMS generates. You will use
+this public key to encrypt (\"wrap\") your key material while it's in transit to KMS.    A
 import token that ensures that KMS can decrypt your key material and associate it with the
 correct KMS key.   The public key and its import token are permanently linked and must be
 used together. Each public key and import token set is valid for 24 hours. The expiration
@@ -2188,6 +2259,8 @@ compatible key state. For details, see Key states of KMS keys in the Key Managem
 Developer Guide.  Cross-account use: No. You cannot perform this operation on a KMS key in
 a different Amazon Web Services account.  Required permissions: kms:GetParametersForImport
 (key policy)  Related operations:     ImportKeyMaterial     DeleteImportedKeyMaterial
+Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: The identifier of the KMS key that will be associated with the imported key
@@ -2197,27 +2270,34 @@ a different Amazon Web Services account.  Required permissions: kms:GetParameter
   1234abcd-12ab-34cd-56ef-1234567890ab    Key ARN:
   arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab    To get the
   key ID and key ARN for a KMS key, use ListKeys or DescribeKey.
-- `wrapping_algorithm`: The algorithm you will use with the RSA public key (PublicKey) in
-  the response to protect your key material during import. For more information, see Select a
-  wrapping algorithm in the Key Management Service Developer Guide. For RSA_AES wrapping
-  algorithms, you encrypt your key material with an AES key that you generate, then encrypt
-  your AES key with the RSA public key from KMS. For RSAES wrapping algorithms, you encrypt
-  your key material directly with the RSA public key from KMS. The wrapping algorithms that
-  you can use depend on the type of key material that you are importing. To import an RSA
-  private key, you must use an RSA_AES wrapping algorithm.    RSA_AES_KEY_WRAP_SHA_256 —
-  Supported for wrapping RSA and ECC key material.    RSA_AES_KEY_WRAP_SHA_1 — Supported
-  for wrapping RSA and ECC key material.    RSAES_OAEP_SHA_256 — Supported for all types of
-  key material, except RSA key material (private key). You cannot use the RSAES_OAEP_SHA_256
-  wrapping algorithm with the RSA_2048 wrapping key spec to wrap ECC_NIST_P521 key material.
-    RSAES_OAEP_SHA_1 — Supported for all types of key material, except RSA key material
-  (private key). You cannot use the RSAES_OAEP_SHA_1 wrapping algorithm with the RSA_2048
-  wrapping key spec to wrap ECC_NIST_P521 key material.    RSAES_PKCS1_V1_5 (Deprecated) —
-  Supported only for symmetric encryption key material (and only in legacy mode).
-- `wrapping_key_spec`: The type of RSA public key to return in the response. You will use
-  this wrapping key with the specified wrapping algorithm to protect your key material during
-  import.  Use the longest RSA wrapping key that is practical.  You cannot use an RSA_2048
-  public key to directly wrap an ECC_NIST_P521 private key. Instead, use an RSA_AES wrapping
-  algorithm or choose a longer RSA public key.
+- `wrapping_algorithm`: The algorithm you will use with the asymmetric public key
+  (PublicKey) in the response to protect your key material during import. For more
+  information, see Select a wrapping algorithm in the Key Management Service Developer Guide.
+  For RSA_AES wrapping algorithms, you encrypt your key material with an AES key that you
+  generate, then encrypt your AES key with the RSA public key from KMS. For RSAES wrapping
+  algorithms, you encrypt your key material directly with the RSA public key from KMS. For
+  SM2PKE wrapping algorithms, you encrypt your key material directly with the SM2 public key
+  from KMS. The wrapping algorithms that you can use depend on the type of key material that
+  you are importing. To import an RSA private key, you must use an RSA_AES wrapping
+  algorithm, except in China Regions, where you must use the SM2PKE wrapping algorithm to
+  import an RSA private key. The SM2PKE wrapping algorithm is available only in China
+  Regions. The RSA_AES_KEY_WRAP_SHA_256 and RSA_AES_KEY_WRAP_SHA_1 wrapping algorithms are
+  not supported in China Regions.    RSA_AES_KEY_WRAP_SHA_256 — Supported for wrapping RSA
+  and ECC key material.    RSA_AES_KEY_WRAP_SHA_1 — Supported for wrapping RSA and ECC key
+  material.    RSAES_OAEP_SHA_256 — Supported for all types of key material, except RSA key
+  material (private key). You cannot use the RSAES_OAEP_SHA_256 wrapping algorithm with the
+  RSA_2048 wrapping key spec to wrap ECC_NIST_P521 key material.    RSAES_OAEP_SHA_1 —
+  Supported for all types of key material, except RSA key material (private key). You cannot
+  use the RSAES_OAEP_SHA_1 wrapping algorithm with the RSA_2048 wrapping key spec to wrap
+  ECC_NIST_P521 key material.    RSAES_PKCS1_V1_5 (Deprecated) — As of October 10, 2023,
+  KMS does not support the RSAES_PKCS1_V1_5 wrapping algorithm.    SM2PKE (China Regions
+  only) — supported for wrapping RSA, ECC, and SM2 key material.
+- `wrapping_key_spec`: The type of public key to return in the response. You will use this
+  wrapping key with the specified wrapping algorithm to protect your key material during
+  import.  Use the longest wrapping key that is practical.  You cannot use an RSA_2048 public
+  key to directly wrap an ECC_NIST_P521 private key. Instead, use an RSA_AES wrapping
+  algorithm or choose a longer RSA public key. The SM2 wrapping key spec is available only in
+  China Regions.
 
 """
 function get_parameters_for_import(
@@ -2293,7 +2373,9 @@ KMS key that you use for this operation must be in a compatible key state. For d
 Key states of KMS keys in the Key Management Service Developer Guide.  Cross-account use:
 Yes. To perform this operation with a KMS key in a different Amazon Web Services account,
 specify the key ARN or alias ARN in the value of the KeyId parameter.  Required
-permissions: kms:GetPublicKey (key policy)  Related operations: CreateKey
+permissions: kms:GetPublicKey (key policy)  Related operations: CreateKey   Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the asymmetric KMS key that includes the public key. To specify a
@@ -2346,49 +2428,49 @@ Service Developer Guide. After you successfully import key material into a KMS k
 reimport the same key material into that KMS key, but you cannot import different key
 material. You might reimport key material to replace key material that expired or key
 material that you deleted. You might also reimport key material to change the expiration
-model or expiration date of the key material. Before reimporting key material, if
-necessary, call DeleteImportedKeyMaterial to delete the current imported key material.
-Each time you import key material into KMS, you can determine whether (ExpirationModel) and
-when (ValidTo) the key material expires. To change the expiration of your key material, you
-must import it again, either by calling ImportKeyMaterial or using the import features of
-the KMS console. Before calling ImportKeyMaterial:   Create or identify a KMS key with no
-key material. The KMS key must have an Origin value of EXTERNAL, which indicates that the
-KMS key is designed for imported key material.  To create an new KMS key for imported key
-material, call the CreateKey operation with an Origin value of EXTERNAL. You can create a
-symmetric encryption KMS key, HMAC KMS key, asymmetric encryption KMS key, or asymmetric
-signing KMS key. You can also import key material into a multi-Region key of any supported
-type. However, you can't import key material into a KMS key in a custom key store.   Use
-the DescribeKey operation to verify that the KeyState of the KMS key is PendingImport,
-which indicates that the KMS key has no key material.  If you are reimporting the same key
-material into an existing KMS key, you might need to call the DeleteImportedKeyMaterial to
-delete its existing key material.   Call the GetParametersForImport operation to get a
-public key and import token set for importing key material.    Use the public key in the
-GetParametersForImport response to encrypt your key material.    Then, in an
-ImportKeyMaterial request, you submit your encrypted key material and import token. When
-calling this operation, you must specify the following values:   The key ID or key ARN of
-the KMS key to associate with the imported key material. Its Origin must be EXTERNAL and
-its KeyState must be PendingImport. You cannot perform this operation on a KMS key in a
-custom key store, or on a KMS key in a different Amazon Web Services account. To get the
-Origin and KeyState of a KMS key, call DescribeKey.   The encrypted key material.    The
-import token that GetParametersForImport returned. You must use a public key and token from
-the same GetParametersForImport response.   Whether the key material expires
-(ExpirationModel) and, if so, when (ValidTo). For help with this choice, see Setting an
-expiration time in the Key Management Service Developer Guide. If you set an expiration
-date, KMS deletes the key material from the KMS key on the specified date, making the KMS
-key unusable. To use the KMS key in cryptographic operations again, you must reimport the
-same key material. However, you can delete and reimport the key material at any time,
-including before the key material expires. Each time you reimport, you can eliminate or
-reset the expiration time.   When this operation is successful, the key state of the KMS
-key changes from PendingImport to Enabled, and you can use the KMS key in cryptographic
-operations. If this operation fails, use the exception to help determine the problem. If
-the error is related to the key material, the import token, or wrapping key, use
-GetParametersForImport to get a new public key and import token for the KMS key and repeat
-the import procedure. For help, see How To Import Key Material in the Key Management
-Service Developer Guide. The KMS key that you use for this operation must be in a
-compatible key state. For details, see Key states of KMS keys in the Key Management Service
-Developer Guide.  Cross-account use: No. You cannot perform this operation on a KMS key in
-a different Amazon Web Services account.  Required permissions: kms:ImportKeyMaterial (key
-policy)  Related operations:     DeleteImportedKeyMaterial     GetParametersForImport
+model or expiration date of the key material.  Each time you import key material into KMS,
+you can determine whether (ExpirationModel) and when (ValidTo) the key material expires. To
+change the expiration of your key material, you must import it again, either by calling
+ImportKeyMaterial or using the import features of the KMS console. Before calling
+ImportKeyMaterial:   Create or identify a KMS key with no key material. The KMS key must
+have an Origin value of EXTERNAL, which indicates that the KMS key is designed for imported
+key material.  To create an new KMS key for imported key material, call the CreateKey
+operation with an Origin value of EXTERNAL. You can create a symmetric encryption KMS key,
+HMAC KMS key, asymmetric encryption KMS key, or asymmetric signing KMS key. You can also
+import key material into a multi-Region key of any supported type. However, you can't
+import key material into a KMS key in a custom key store.   Use the DescribeKey operation
+to verify that the KeyState of the KMS key is PendingImport, which indicates that the KMS
+key has no key material.  If you are reimporting the same key material into an existing KMS
+key, you might need to call the DeleteImportedKeyMaterial to delete its existing key
+material.   Call the GetParametersForImport operation to get a public key and import token
+set for importing key material.    Use the public key in the GetParametersForImport
+response to encrypt your key material.    Then, in an ImportKeyMaterial request, you submit
+your encrypted key material and import token. When calling this operation, you must specify
+the following values:   The key ID or key ARN of the KMS key to associate with the imported
+key material. Its Origin must be EXTERNAL and its KeyState must be PendingImport. You
+cannot perform this operation on a KMS key in a custom key store, or on a KMS key in a
+different Amazon Web Services account. To get the Origin and KeyState of a KMS key, call
+DescribeKey.   The encrypted key material.    The import token that GetParametersForImport
+returned. You must use a public key and token from the same GetParametersForImport
+response.   Whether the key material expires (ExpirationModel) and, if so, when (ValidTo).
+For help with this choice, see Setting an expiration time in the Key Management Service
+Developer Guide. If you set an expiration date, KMS deletes the key material from the KMS
+key on the specified date, making the KMS key unusable. To use the KMS key in cryptographic
+operations again, you must reimport the same key material. However, you can delete and
+reimport the key material at any time, including before the key material expires. Each time
+you reimport, you can eliminate or reset the expiration time.   When this operation is
+successful, the key state of the KMS key changes from PendingImport to Enabled, and you can
+use the KMS key in cryptographic operations. If this operation fails, use the exception to
+help determine the problem. If the error is related to the key material, the import token,
+or wrapping key, use GetParametersForImport to get a new public key and import token for
+the KMS key and repeat the import procedure. For help, see How To Import Key Material in
+the Key Management Service Developer Guide. The KMS key that you use for this operation
+must be in a compatible key state. For details, see Key states of KMS keys in the Key
+Management Service Developer Guide.  Cross-account use: No. You cannot perform this
+operation on a KMS key in a different Amazon Web Services account.  Required permissions:
+kms:ImportKeyMaterial (key policy)  Related operations:     DeleteImportedKeyMaterial
+GetParametersForImport     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `encrypted_key_material`: The encrypted key material to import. The key material must be
@@ -2488,7 +2570,8 @@ in your account, including predefined aliases, do not count against your KMS ali
  Cross-account use: No. ListAliases does not return aliases in other Amazon Web Services
 accounts.  Required permissions: kms:ListAliases (IAM policy) For details, see Controlling
 access to aliases in the Key Management Service Developer Guide.  Related operations:
-CreateAlias     DeleteAlias     UpdateAlias
+CreateAlias     DeleteAlias     UpdateAlias     Eventual consistency: The KMS API follows
+an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
@@ -2533,6 +2616,8 @@ several different grantee principals.   Cross-account use: Yes. To perform this 
 on a KMS key in a different Amazon Web Services account, specify the key ARN in the value
 of the KeyId parameter.  Required permissions: kms:ListGrants (key policy)  Related
 operations:     CreateGrant     ListRetirableGrants     RetireGrant     RevokeGrant
+Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Returns only grants for the specified KMS key. This parameter is required.
@@ -2584,6 +2669,8 @@ designed to get policy names that you can use in a GetKeyPolicy operation. Howev
 only valid policy name is default.   Cross-account use: No. You cannot perform this
 operation on a KMS key in a different Amazon Web Services account.  Required permissions:
 kms:ListKeyPolicies (key policy)  Related operations:     GetKeyPolicy     PutKeyPolicy
+Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Gets the names of key policies for the specified KMS key. Specify the key ID or
@@ -2622,13 +2709,64 @@ function list_key_policies(
 end
 
 """
+    list_key_rotations(key_id)
+    list_key_rotations(key_id, params::Dict{String,<:Any})
+
+Returns information about all completed key material rotations for the specified KMS key.
+You must specify the KMS key in all requests. You can refine the key rotations list by
+limiting the number of rotations returned. For detailed information about automatic and
+on-demand key rotations, see Rotating KMS keys in the Key Management Service Developer
+Guide.  Cross-account use: No. You cannot perform this operation on a KMS key in a
+different Amazon Web Services account.  Required permissions: kms:ListKeyRotations (key
+policy)  Related operations:     EnableKeyRotation     DisableKeyRotation
+GetKeyRotationStatus     RotateKeyOnDemand     Eventual consistency: The KMS API follows an
+eventual consistency model. For more information, see KMS eventual consistency.
+
+# Arguments
+- `key_id`: Gets the key rotations for the specified KMS key. Specify the key ID or key ARN
+  of the KMS key. For example:   Key ID: 1234abcd-12ab-34cd-56ef-1234567890ab    Key ARN:
+  arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab    To get the
+  key ID and key ARN for a KMS key, use ListKeys or DescribeKey.
+
+# Optional Parameters
+Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"Limit"`: Use this parameter to specify the maximum number of items to return. When this
+  value is present, KMS does not return more than the specified number of items, but it might
+  return fewer. This value is optional. If you include a value, it must be between 1 and
+  1000, inclusive. If you do not include a value, it defaults to 100.
+- `"Marker"`: Use this parameter in a subsequent request after you receive a response with
+  truncated results. Set it to the value of NextMarker from the truncated response you just
+  received.
+"""
+function list_key_rotations(KeyId; aws_config::AbstractAWSConfig=global_aws_config())
+    return kms(
+        "ListKeyRotations",
+        Dict{String,Any}("KeyId" => KeyId);
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+function list_key_rotations(
+    KeyId, params::AbstractDict{String}; aws_config::AbstractAWSConfig=global_aws_config()
+)
+    return kms(
+        "ListKeyRotations",
+        Dict{String,Any}(mergewith(_merge, Dict{String,Any}("KeyId" => KeyId), params));
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+
+"""
     list_keys()
     list_keys(params::Dict{String,<:Any})
 
 Gets a list of all KMS keys in the caller's Amazon Web Services account and Region.
 Cross-account use: No. You cannot perform this operation on a KMS key in a different Amazon
 Web Services account.  Required permissions: kms:ListKeys (IAM policy)  Related operations:
-    CreateKey     DescribeKey     ListAliases     ListResourceTags
+    CreateKey     DescribeKey     ListAliases     ListResourceTags     Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
@@ -2658,7 +2796,9 @@ the format and syntax, see Tagging Amazon Web Services resources in the Amazon W
 General Reference. For information about using tags in KMS, see Tagging keys.
 Cross-account use: No. You cannot perform this operation on a KMS key in a different Amazon
 Web Services account.  Required permissions: kms:ListResourceTags (key policy)  Related
-operations:     CreateKey     ReplicateKey     TagResource     UntagResource
+operations:     CreateKey     ReplicateKey     TagResource     UntagResource     Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Arguments
 - `key_id`: Gets tags on the specified KMS key. Specify the key ID or key ARN of the KMS
@@ -2708,12 +2848,19 @@ to determine which grants you may retire. To retire a grant, use the RetireGrant
 For detailed information about grants, including grant terminology, see Grants in KMS in
 the  Key Management Service Developer Guide . For examples of working with grants in
 several programming languages, see Programming grants.   Cross-account use: You must
-specify a principal in your Amazon Web Services account. However, this operation can return
-grants in any Amazon Web Services account. You do not need kms:ListRetirableGrants
-permission (or any other additional permission) in any Amazon Web Services account other
-than your own.  Required permissions: kms:ListRetirableGrants (IAM policy) in your Amazon
-Web Services account.  Related operations:     CreateGrant     ListGrants     RetireGrant
-  RevokeGrant
+specify a principal in your Amazon Web Services account. This operation returns a list of
+grants where the retiring principal specified in the ListRetirableGrants request is the
+same retiring principal on the grant. This can include grants on KMS keys owned by other
+Amazon Web Services accounts, but you do not need kms:ListRetirableGrants permission (or
+any other additional permission) in any Amazon Web Services account other than your own.
+Required permissions: kms:ListRetirableGrants (IAM policy) in your Amazon Web Services
+account.  KMS authorizes ListRetirableGrants requests by evaluating the caller account's
+kms:ListRetirableGrants permissions. The authorized resource in ListRetirableGrants calls
+is the retiring principal specified in the request. KMS does not evaluate the caller's
+permissions to verify their access to any KMS keys or grants that might be returned by the
+ListRetirableGrants call.   Related operations:     CreateGrant     ListGrants
+RetireGrant     RevokeGrant     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `retiring_principal`: The retiring principal for which to list grants. Enter a principal
@@ -2761,8 +2908,8 @@ function list_retirable_grants(
 end
 
 """
-    put_key_policy(key_id, policy, policy_name)
-    put_key_policy(key_id, policy, policy_name, params::Dict{String,<:Any})
+    put_key_policy(key_id, policy)
+    put_key_policy(key_id, policy, params::Dict{String,<:Any})
 
 Attaches a key policy to the specified KMS key.  For more information about key policies,
 see Key Policies in the Key Management Service Developer Guide. For help writing and
@@ -2771,7 +2918,8 @@ Access Management User Guide . For examples of adding a key policy in multiple p
 languages, see Setting a key policy in the Key Management Service Developer Guide.
 Cross-account use: No. You cannot perform this operation on a KMS key in a different Amazon
 Web Services account.  Required permissions: kms:PutKeyPolicy (key policy)  Related
-operations: GetKeyPolicy
+operations: GetKeyPolicy   Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Sets the key policy on the specified KMS key. Specify the key ID or key ARN of
@@ -2796,7 +2944,6 @@ operations: GetKeyPolicy
   policies, see Key policies in KMS in the Key Management Service Developer Guide.For help
   writing and formatting a JSON policy document, see the IAM JSON Policy Reference in the
   Identity and Access Management User Guide .
-- `policy_name`: The name of the key policy. The only valid value is default.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
@@ -2806,13 +2953,13 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   information, see Default key policy in the Key Management Service Developer Guide.  Use
   this parameter only when you intend to prevent the principal that is making the request
   from making a subsequent PutKeyPolicy request on the KMS key.
+- `"PolicyName"`: The name of the key policy. If no policy name is specified, the default
+  value is default. The only valid value is default.
 """
-function put_key_policy(
-    KeyId, Policy, PolicyName; aws_config::AbstractAWSConfig=global_aws_config()
-)
+function put_key_policy(KeyId, Policy; aws_config::AbstractAWSConfig=global_aws_config())
     return kms(
         "PutKeyPolicy",
-        Dict{String,Any}("KeyId" => KeyId, "Policy" => Policy, "PolicyName" => PolicyName);
+        Dict{String,Any}("KeyId" => KeyId, "Policy" => Policy);
         aws_config=aws_config,
         feature_set=SERVICE_FEATURE_SET,
     )
@@ -2820,7 +2967,6 @@ end
 function put_key_policy(
     KeyId,
     Policy,
-    PolicyName,
     params::AbstractDict{String};
     aws_config::AbstractAWSConfig=global_aws_config(),
 )
@@ -2828,11 +2974,7 @@ function put_key_policy(
         "PutKeyPolicy",
         Dict{String,Any}(
             mergewith(
-                _merge,
-                Dict{String,Any}(
-                    "KeyId" => KeyId, "Policy" => Policy, "PolicyName" => PolicyName
-                ),
-                params,
+                _merge, Dict{String,Any}("KeyId" => KeyId, "Policy" => Policy), params
             ),
         );
         aws_config=aws_config,
@@ -2889,7 +3031,8 @@ destination KMS key (key policy)   To permit reencryption from or to a KMS key, 
 in the key policy when you use the console to create a KMS key. But you must include it
 manually when you create a KMS key programmatically or when you use the PutKeyPolicy
 operation to set a key policy.  Related operations:     Decrypt     Encrypt
-GenerateDataKey     GenerateDataKeyPair
+GenerateDataKey     GenerateDataKeyPair     Eventual consistency: The KMS API follows an
+eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `ciphertext_blob`: Ciphertext of the data to reencrypt.
@@ -2923,6 +3066,9 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   encryption KMS keys. On operations with symmetric encryption KMS keys, an encryption
   context is optional, but it is strongly recommended. For more information, see Encryption
   context in the Key Management Service Developer Guide.
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"GrantTokens"`: A list of grant tokens. Use a grant token when your permission to call
   this operation comes from a new grant that has not yet achieved eventual consistency. For
   more information, see Grant token and Using a grant token in the Key Management Service
@@ -3040,7 +3186,8 @@ Services account.   Required permissions:     kms:ReplicateKey on the primary ke
 primary key's Region). Include this permission in the primary key's key policy.
 kms:CreateKey in an IAM policy in the replica Region.   To use the Tags parameter,
 kms:TagResource in an IAM policy in the replica Region.    Related operations     CreateKey
-    UpdatePrimaryRegion
+    UpdatePrimaryRegion     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the multi-Region primary key that is being replicated. To determine
@@ -3162,13 +3309,17 @@ Service Developer Guide. For detailed information about grants, including grant
 terminology, see Grants in KMS in the  Key Management Service Developer Guide . For
 examples of working with grants in several programming languages, see Programming grants.
 Cross-account use: Yes. You can retire a grant on a KMS key in a different Amazon Web
-Services account.  Required permissions::Permission to retire a grant is determined
+Services account.  Required permissions: Permission to retire a grant is determined
 primarily by the grant. For details, see Retiring and revoking grants in the Key Management
 Service Developer Guide.  Related operations:     CreateGrant     ListGrants
-ListRetirableGrants     RevokeGrant
+ListRetirableGrants     RevokeGrant     Eventual consistency: The KMS API follows an
+eventual consistency model. For more information, see KMS eventual consistency.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"GrantId"`: Identifies the grant to retire. To get the grant ID, use CreateGrant,
   ListGrants, or ListRetirableGrants.   Grant ID Example -
   0123456789012345678901234567890123456789012345678901234567890123
@@ -3206,7 +3357,8 @@ examples of working with grants in several programming languages, see Programmin
 Cross-account use: Yes. To perform this operation on a KMS key in a different Amazon Web
 Services account, specify the key ARN in the value of the KeyId parameter.  Required
 permissions: kms:RevokeGrant (key policy).  Related operations:     CreateGrant
-ListGrants     ListRetirableGrants     RetireGrant
+ListGrants     ListRetirableGrants     RetireGrant     Eventual consistency: The KMS API
+follows an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `grant_id`: Identifies the grant to revoke. To get the grant ID, use CreateGrant,
@@ -3218,6 +3370,11 @@ ListGrants     ListRetirableGrants     RetireGrant
   arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab    To get the
   key ID and key ARN for a KMS key, use ListKeys or DescribeKey.
 
+# Optional Parameters
+Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 """
 function revoke_grant(GrantId, KeyId; aws_config::AbstractAWSConfig=global_aws_config())
     return kms(
@@ -3246,6 +3403,67 @@ function revoke_grant(
 end
 
 """
+    rotate_key_on_demand(key_id)
+    rotate_key_on_demand(key_id, params::Dict{String,<:Any})
+
+Immediately initiates rotation of the key material of the specified symmetric encryption
+KMS key. You can perform on-demand rotation of the key material in customer managed KMS
+keys, regardless of whether or not automatic key rotation is enabled. On-demand rotations
+do not change existing automatic rotation schedules. For example, consider a KMS key that
+has automatic key rotation enabled with a rotation period of 730 days. If the key is
+scheduled to automatically rotate on April 14, 2024, and you perform an on-demand rotation
+on April 10, 2024, the key will automatically rotate, as scheduled, on April 14, 2024 and
+every 730 days thereafter.  You can perform on-demand key rotation a maximum of 10 times
+per KMS key. You can use the KMS console to view the number of remaining on-demand
+rotations available for a KMS key.  You can use GetKeyRotationStatus to identify any in
+progress on-demand rotations. You can use ListKeyRotations to identify the date that
+completed on-demand rotations were performed. You can monitor rotation of the key material
+for your KMS keys in CloudTrail and Amazon CloudWatch. On-demand key rotation is supported
+only on symmetric encryption KMS keys. You cannot perform on-demand rotation of asymmetric
+KMS keys, HMAC KMS keys, KMS keys with imported key material, or KMS keys in a custom key
+store. To perform on-demand rotation of a set of related multi-Region keys, invoke the
+on-demand rotation on the primary key. You cannot initiate on-demand rotation of Amazon Web
+Services managed KMS keys. KMS always rotates the key material of Amazon Web Services
+managed keys every year. Rotation of Amazon Web Services owned KMS keys is managed by the
+Amazon Web Services service that owns the key. The KMS key that you use for this operation
+must be in a compatible key state. For details, see Key states of KMS keys in the Key
+Management Service Developer Guide.  Cross-account use: No. You cannot perform this
+operation on a KMS key in a different Amazon Web Services account.  Required permissions:
+kms:RotateKeyOnDemand (key policy)  Related operations:     EnableKeyRotation
+DisableKeyRotation     GetKeyRotationStatus     ListKeyRotations     Eventual consistency:
+The KMS API follows an eventual consistency model. For more information, see KMS eventual
+consistency.
+
+# Arguments
+- `key_id`: Identifies a symmetric encryption KMS key. You cannot perform on-demand
+  rotation of asymmetric KMS keys, HMAC KMS keys, KMS keys with imported key material, or KMS
+  keys in a custom key store. To perform on-demand rotation of a set of related multi-Region
+  keys, invoke the on-demand rotation on the primary key. Specify the key ID or key ARN of
+  the KMS key. For example:   Key ID: 1234abcd-12ab-34cd-56ef-1234567890ab    Key ARN:
+  arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab    To get the
+  key ID and key ARN for a KMS key, use ListKeys or DescribeKey.
+
+"""
+function rotate_key_on_demand(KeyId; aws_config::AbstractAWSConfig=global_aws_config())
+    return kms(
+        "RotateKeyOnDemand",
+        Dict{String,Any}("KeyId" => KeyId);
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+function rotate_key_on_demand(
+    KeyId, params::AbstractDict{String}; aws_config::AbstractAWSConfig=global_aws_config()
+)
+    return kms(
+        "RotateKeyOnDemand",
+        Dict{String,Any}(mergewith(_merge, Dict{String,Any}("KeyId" => KeyId), params));
+        aws_config=aws_config,
+        feature_set=SERVICE_FEATURE_SET,
+    )
+end
+
+"""
     schedule_key_deletion(key_id)
     schedule_key_deletion(key_id, params::Dict{String,<:Any})
 
@@ -3258,30 +3476,30 @@ KMS key. After the waiting period ends, KMS deletes the KMS key, its key materia
 KMS data associated with it, including all aliases that refer to it.  Deleting a KMS key is
 a destructive and potentially dangerous operation. When a KMS key is deleted, all data that
 was encrypted under the KMS key is unrecoverable. (The only exception is a multi-Region
-replica key, or an asymmetric or HMAC KMS key with imported key material[BUGBUG-link to
-importing-keys-managing.html#import-delete-key.) To prevent the use of a KMS key without
-deleting it, use DisableKey.   You can schedule the deletion of a multi-Region primary key
-and its replica keys at any time. However, KMS will not delete a multi-Region primary key
-with existing replica keys. If you schedule the deletion of a primary key with replicas,
-its key state changes to PendingReplicaDeletion and it cannot be replicated or used in
-cryptographic operations. This status can continue indefinitely. When the last of its
-replicas keys is deleted (not just scheduled), the key state of the primary key changes to
-PendingDeletion and its waiting period (PendingWindowInDays) begins. For details, see
-Deleting multi-Region keys in the Key Management Service Developer Guide. When KMS deletes
-a KMS key from an CloudHSM key store, it makes a best effort to delete the associated key
-material from the associated CloudHSM cluster. However, you might need to manually delete
-the orphaned key material from the cluster and its backups. Deleting a KMS key from an
-external key store has no effect on the associated external key. However, for both types of
-custom key stores, deleting a KMS key is destructive and irreversible. You cannot decrypt
-ciphertext encrypted under the KMS key by using only its associated external key or
-CloudHSM key. Also, you cannot recreate a KMS key in an external key store by creating a
-new KMS key with the same key material. For more information about scheduling a KMS key for
-deletion, see Deleting KMS keys in the Key Management Service Developer Guide. The KMS key
-that you use for this operation must be in a compatible key state. For details, see Key
-states of KMS keys in the Key Management Service Developer Guide.  Cross-account use: No.
-You cannot perform this operation on a KMS key in a different Amazon Web Services account.
-Required permissions: kms:ScheduleKeyDeletion (key policy)  Related operations
-CancelKeyDeletion     DisableKey
+replica key, or an asymmetric or HMAC KMS key with imported key material.) To prevent the
+use of a KMS key without deleting it, use DisableKey.   You can schedule the deletion of a
+multi-Region primary key and its replica keys at any time. However, KMS will not delete a
+multi-Region primary key with existing replica keys. If you schedule the deletion of a
+primary key with replicas, its key state changes to PendingReplicaDeletion and it cannot be
+replicated or used in cryptographic operations. This status can continue indefinitely. When
+the last of its replicas keys is deleted (not just scheduled), the key state of the primary
+key changes to PendingDeletion and its waiting period (PendingWindowInDays) begins. For
+details, see Deleting multi-Region keys in the Key Management Service Developer Guide. When
+KMS deletes a KMS key from an CloudHSM key store, it makes a best effort to delete the
+associated key material from the associated CloudHSM cluster. However, you might need to
+manually delete the orphaned key material from the cluster and its backups. Deleting a KMS
+key from an external key store has no effect on the associated external key. However, for
+both types of custom key stores, deleting a KMS key is destructive and irreversible. You
+cannot decrypt ciphertext encrypted under the KMS key by using only its associated external
+key or CloudHSM key. Also, you cannot recreate a KMS key in an external key store by
+creating a new KMS key with the same key material. For more information about scheduling a
+KMS key for deletion, see Deleting KMS keys in the Key Management Service Developer Guide.
+The KMS key that you use for this operation must be in a compatible key state. For details,
+see Key states of KMS keys in the Key Management Service Developer Guide.  Cross-account
+use: No. You cannot perform this operation on a KMS key in a different Amazon Web Services
+account.  Required permissions: kms:ScheduleKeyDeletion (key policy)  Related operations
+ CancelKeyDeletion     DisableKey     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: The unique identifier of the KMS key to delete. Specify the key ID or key ARN
@@ -3352,6 +3570,8 @@ state. For details, see Key states of KMS keys in the Key Management Service Dev
 Guide.  Cross-account use: Yes. To perform this operation with a KMS key in a different
 Amazon Web Services account, specify the key ARN or alias ARN in the value of the KeyId
 parameter.  Required permissions: kms:Sign (key policy)  Related operations: Verify
+Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies an asymmetric KMS key. KMS uses the private key in the asymmetric
@@ -3374,6 +3594,9 @@ parameter.  Required permissions: kms:Sign (key policy)  Related operations: Ver
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"GrantTokens"`: A list of grant tokens. Use a grant token when your permission to call
   this operation comes from a new grant that has not yet achieved eventual consistency. For
   more information, see Grant token and Using a grant token in the Key Management Service
@@ -3451,7 +3674,8 @@ operation must be in a compatible key state. For details, see Key states of KMS 
 Key Management Service Developer Guide.  Cross-account use: No. You cannot perform this
 operation on a KMS key in a different Amazon Web Services account.   Required permissions:
 kms:TagResource (key policy)  Related operations     CreateKey     ListResourceTags
-ReplicateKey     UntagResource
+ReplicateKey     UntagResource     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies a customer managed key in the account and Region. Specify the key ID
@@ -3506,7 +3730,9 @@ Reference.  The KMS key that you use for this operation must be in a compatible 
 For details, see Key states of KMS keys in the Key Management Service Developer Guide.
 Cross-account use: No. You cannot perform this operation on a KMS key in a different Amazon
 Web Services account.  Required permissions: kms:UntagResource (key policy)  Related
-operations     CreateKey     ListResourceTags     ReplicateKey     TagResource
+operations     CreateKey     ListResourceTags     ReplicateKey     TagResource     Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the KMS key from which you are removing tags. Specify the key ID or
@@ -3566,7 +3792,8 @@ key in a different Amazon Web Services account.   Required permissions     kms:U
 on the alias (IAM policy).    kms:UpdateAlias on the current KMS key (key policy).
 kms:UpdateAlias on the new KMS key (key policy).   For details, see Controlling access to
 aliases in the Key Management Service Developer Guide.  Related operations:     CreateAlias
-    DeleteAlias     ListAliases
+    DeleteAlias     ListAliases     Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `alias_name`: Identifies the alias that is changing its KMS key. This value must begin
@@ -3664,7 +3891,9 @@ path. If the operation succeeds, it returns a JSON object with no properties.
 Cross-account use: No. You cannot perform this operation on a custom key store in a
 different Amazon Web Services account.  Required permissions: kms:UpdateCustomKeyStore (IAM
 policy)  Related operations:     ConnectCustomKeyStore     CreateCustomKeyStore
-DeleteCustomKeyStore     DescribeCustomKeyStores     DisconnectCustomKeyStore
+DeleteCustomKeyStore     DescribeCustomKeyStores     DisconnectCustomKeyStore     Eventual
+consistency: The KMS API follows an eventual consistency model. For more information, see
+KMS eventual consistency.
 
 # Arguments
 - `custom_key_store_id`: Identifies the custom key store that you want to update. Enter the
@@ -3770,7 +3999,8 @@ Updates the description of a KMS key. To see the description of a KMS key, use D
 details, see Key states of KMS keys in the Key Management Service Developer Guide.
 Cross-account use: No. You cannot perform this operation on a KMS key in a different Amazon
 Web Services account.   Required permissions: kms:UpdateKeyDescription (key policy)
-Related operations     CreateKey     DescribeKey
+Related operations     CreateKey     DescribeKey     Eventual consistency: The KMS API
+follows an eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `description`: New description for the KMS key.  Do not include confidential or sensitive
@@ -3852,7 +4082,8 @@ different Amazon Web Services account.   Required permissions:     kms:UpdatePri
 on the current primary key (in the primary key's Region). Include this permission primary
 key's key policy.    kms:UpdatePrimaryRegion on the current replica key (in the replica
 key's Region). Include this permission in the replica key's key policy.    Related
-operations     CreateKey     ReplicateKey
+operations     CreateKey     ReplicateKey     Eventual consistency: The KMS API follows an
+eventual consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the current primary key. When the operation completes, this KMS key
@@ -3926,6 +4157,8 @@ state. For details, see Key states of KMS keys in the Key Management Service Dev
 Guide.  Cross-account use: Yes. To perform this operation with a KMS key in a different
 Amazon Web Services account, specify the key ARN or alias ARN in the value of the KeyId
 parameter.   Required permissions: kms:Verify (key policy)  Related operations: Sign
+Eventual consistency: The KMS API follows an eventual consistency model. For more
+information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: Identifies the asymmetric KMS key that will be used to verify the signature.
@@ -3949,6 +4182,9 @@ parameter.   Required permissions: kms:Verify (key policy)  Related operations: 
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"GrantTokens"`: A list of grant tokens. Use a grant token when your permission to call
   this operation comes from a new grant that has not yet achieved eventual consistency. For
   more information, see Grant token and Using a grant token in the Key Management Service
@@ -4034,7 +4270,8 @@ operation must be in a compatible key state. For details, see Key states of KMS 
 Key Management Service Developer Guide.  Cross-account use: Yes. To perform this operation
 with a KMS key in a different Amazon Web Services account, specify the key ARN or alias ARN
 in the value of the KeyId parameter.   Required permissions: kms:VerifyMac (key policy)
-Related operations: GenerateMac
+Related operations: GenerateMac   Eventual consistency: The KMS API follows an eventual
+consistency model. For more information, see KMS eventual consistency.
 
 # Arguments
 - `key_id`: The KMS key that will be used in the verification. Enter a key ID of the KMS
@@ -4053,6 +4290,9 @@ Related operations: GenerateMac
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DryRun"`: Checks if your request will succeed. DryRun is an optional parameter.  To
+  learn more about how to use this parameter, see Testing your KMS API calls in the Key
+  Management Service Developer Guide.
 - `"GrantTokens"`: A list of grant tokens. Use a grant token when your permission to call
   this operation comes from a new grant that has not yet achieved eventual consistency. For
   more information, see Grant token and Using a grant token in the Key Management Service

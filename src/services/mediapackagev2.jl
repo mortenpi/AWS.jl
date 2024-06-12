@@ -152,6 +152,7 @@ with each request.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DashManifests"`: A DASH manifest configuration.
 - `"Description"`: Enter any descriptive text that helps you to identify the origin
   endpoint.
 - `"HlsManifests"`: An HTTP live streaming (HLS) manifest configuration.
@@ -965,6 +966,9 @@ reflected for a few minutes.
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
 - `"Description"`: Any descriptive information that you want to add to the channel for
   future identification purposes.
+- `"x-amzn-update-if-match"`: The expected current Entity Tag (ETag) for the resource. If
+  the specified ETag does not match the resource's current entity tag, the update request
+  will be rejected.
 """
 function update_channel(
     ChannelGroupName, ChannelName; aws_config::AbstractAWSConfig=global_aws_config()
@@ -1008,6 +1012,9 @@ reflected for a few minutes.
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
 - `"Description"`: Any descriptive information that you want to add to the channel group
   for future identification purposes.
+- `"x-amzn-update-if-match"`: The expected current Entity Tag (ETag) for the resource. If
+  the specified ETag does not match the resource's current entity tag, the update request
+  will be rejected.
 """
 function update_channel_group(
     ChannelGroupName; aws_config::AbstractAWSConfig=global_aws_config()
@@ -1055,6 +1062,7 @@ make that impact the video output may not be reflected for a few minutes.
 
 # Optional Parameters
 Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"DashManifests"`: A DASH manifest configuration.
 - `"Description"`: Any descriptive information that you want to add to the origin endpoint
   for future identification purposes.
 - `"HlsManifests"`: An HTTP live streaming (HLS) manifest configuration.
@@ -1065,6 +1073,9 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   live stream that's available for on-demand viewing. Viewers can start-over or catch-up on
   content that falls within the window. The maximum startover window is 1,209,600 seconds (14
   days).
+- `"x-amzn-update-if-match"`: The expected current Entity Tag (ETag) for the resource. If
+  the specified ETag does not match the resource's current entity tag, the update request
+  will be rejected.
 """
 function update_origin_endpoint(
     ChannelGroupName,

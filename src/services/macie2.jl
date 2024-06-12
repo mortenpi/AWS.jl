@@ -177,17 +177,23 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   specify for the job (managedDataIdentifierSelector). To retrieve a list of valid values for
   this property, use the ListManagedDataIdentifiers operation.
 - `"managedDataIdentifierSelector"`: The selection type to apply when determining which
-  managed data identifiers the job uses to analyze data. Valid values are: ALL - Use all the
-  managed data identifiers that Amazon Macie provides. If you specify this value, don't
-  specify any values for the managedDataIdentifierIds property. EXCLUDE - Use all the managed
-  data identifiers that Macie provides except the managed data identifiers specified by the
-  managedDataIdentifierIds property. INCLUDE - Use only the managed data identifiers
-  specified by the managedDataIdentifierIds property. NONE - Don't use any managed data
-  identifiers. If you specify this value, specify at least one custom data identifier for the
-  job (customDataIdentifierIds) and don't specify any values for the managedDataIdentifierIds
-  property. If you don't specify a value for this property, the job uses all managed data
-  identifiers. If you don't specify a value for this property or you specify ALL or EXCLUDE
-  for a recurring job, the job also uses new managed data identifiers as they are released.
+  managed data identifiers the job uses to analyze data. Valid values are: ALL - Use all
+  managed data identifiers. If you specify this value, don't specify any values for the
+  managedDataIdentifierIds property. EXCLUDE - Use all managed data identifiers except the
+  ones specified by the managedDataIdentifierIds property. INCLUDE - Use only the managed
+  data identifiers specified by the managedDataIdentifierIds property. NONE - Don't use any
+  managed data identifiers. If you specify this value, specify at least one value for the
+  customDataIdentifierIds property and don't specify any values for the
+  managedDataIdentifierIds property. RECOMMENDED (default) - Use the recommended set of
+  managed data identifiers. If you specify this value, don't specify any values for the
+  managedDataIdentifierIds property. If you don't specify a value for this property, the job
+  uses the recommended set of managed data identifiers. If the job is a recurring job and you
+  specify ALL or EXCLUDE, each job run automatically uses new managed data identifiers that
+  are released. If you don't specify a value for this property or you specify RECOMMENDED for
+  a recurring job, each job run automatically uses all the managed data identifiers that are
+  in the recommended set when the run starts. For information about individual managed data
+  identifiers or to determine which ones are in the recommended set, see Using managed data
+  identifiers and Recommended managed data identifiers in the Amazon Macie User Guide.
 - `"samplingPercentage"`: The sampling depth, as a percentage, for the job to apply when
   processing objects. This value determines the percentage of eligible objects that the job
   analyzes. If this value is less than 100, Amazon Macie selects the objects to analyze at
@@ -285,7 +291,7 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   matches the pattern and the keyword is within the specified distance, Amazon Macie includes
   the result. The distance can be 1-300 characters. The default value is 50.
 - `"severityLevels"`: The severity to assign to findings that the custom data identifier
-  produces, based on the number of occurrences of text that matches the custom data
+  produces, based on the number of occurrences of text that match the custom data
   identifier's detection criteria. You can specify as many as three SeverityLevel objects in
   this array, one for each severity: LOW, MEDIUM, or HIGH. If you specify more than one, the
   occurrences thresholds must be in ascending order by severity, moving from LOW to HIGH. For
@@ -1253,7 +1259,7 @@ end
     get_finding_statistics(group_by)
     get_finding_statistics(group_by, params::Dict{String,<:Any})
 
- Retrieves (queries) aggregated statistical data about findings.
+Retrieves (queries) aggregated statistical data about findings.
 
 # Arguments
 - `group_by`: The finding property to use to group the query results. Valid values are:
@@ -2843,9 +2849,13 @@ Updates the status and configuration settings for retrieving occurrences of sens
 reported by findings.
 
 # Arguments
-- `configuration`: The new configuration settings and the status of the configuration for
-  the account.
+- `configuration`: The KMS key to use to encrypt the sensitive data, and the status of the
+  configuration for the Amazon Macie account.
 
+# Optional Parameters
+Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys are:
+- `"retrievalConfiguration"`: The access method and settings to use when retrieving the
+  sensitive data.
 """
 function update_reveal_configuration(
     configuration; aws_config::AbstractAWSConfig=global_aws_config()
@@ -2893,7 +2903,7 @@ Optional parameters can be passed as a `params::Dict{String,<:Any}`. Valid keys 
   SensitivityInspectionTemplateIncludes.allowListIds and
   SensitivityInspectionTemplateIncludes.customDataIdentifierIds properties, respectively.
 - `"includes"`: The allow lists, custom data identifiers, and managed data identifiers to
-  include (use) when analyzing data.
+  explicitly include (use) when analyzing data.
 """
 function update_sensitivity_inspection_template(
     id; aws_config::AbstractAWSConfig=global_aws_config()
